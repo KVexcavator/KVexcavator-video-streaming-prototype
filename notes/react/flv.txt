@@ -1,0 +1,4 @@
+https://www.npmjs.com/package/flv.js/v/1.6.0
+
+npm install flv.js
+

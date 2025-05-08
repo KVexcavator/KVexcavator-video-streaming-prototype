@@ -1,0 +1,18 @@
+Воспроизведение в React через hls.js
+HLS (HTTP Live Streaming) гораздо надёжнее для продакшна, особенно на мобильных устройствах (iOS всегда требует HLS)
+
+https://www.npmjs.com/package/hls.js/v/1.0.3-0.canary.7275
+npm install hls.js
+
+srs.conf
+vhost __defaultVhost__ {
+    hls {
+        enabled         on;
+        hls_path        ./objs/nginx/html;
+        hls_fragment    10;
+        hls_window      60;
+    }
+}
+если HLS включён, ссылку можно проверить напрямую
+http://localhost:8080/live/livestream.m3u8
+
