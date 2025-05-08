@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  srs:
+    build:
+      context: ./
+      dockerfile: dockers/dev/Dockerfile.srs.config
+    container_name: srs-config
+    restart: always
+    ports:
+      - "1935:1935"
+      - "1985:1985"
+      - "8080:8080"
+    # volumes:
+    #   - ./srs-config:/usr/local/srs/conf 
+    networks:
+      - srs-project-net
+
+networks:
+  srs-project-net:
+    driver: bridge

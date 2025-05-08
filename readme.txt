@@ -1,0 +1,1 @@
+This is a prototype of the social net project for video-streaming

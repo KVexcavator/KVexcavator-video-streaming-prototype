@@ -1,0 +1,66 @@
+# Editor directories and files
+.qodo
+.git
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# =====================
+# react
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+# =====================
+# python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.sqlite3
+*.db
+uploads/*
+
+logs/
+*.log
+*.out
+
+# Pytest / Coverage
+.cache/
+.tox/
+.coverage
+coverage.xml
+htmlcov/
+
+# Mypy
+.mypy_cache/
+
+# Pydantic cache
+.pydantic/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Poetry
+poetry.lock
+
+# Pipenv
+Pipfile
+Pipfile.lock
+
+# FastAPI-specific
+instance/
+#=====================

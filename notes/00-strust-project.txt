@@ -1,0 +1,9 @@
+/back-register
+/back-srs-mediator
+/dockers
+/front-main
+/front-admin
+/notes
+.gitignore
+docker-compose.yml
+readme.txt

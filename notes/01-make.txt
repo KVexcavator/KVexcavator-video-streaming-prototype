@@ -1,0 +1,33 @@
+Сбока проекта:
+1.как вытянуть конфиги из докера в паку srs-config
+заходим в баш
+docker run --rm -it ossrs/srs:5 bash
+ищем конфиги
+find / -name "*.conf" 2>/dev/null
+допустим лежат, как srs.conf, console.conf и т.д, в 
+/usr/local/srs/conf/
+выйти exit
+получить id
+docker run -d --name srs-temp ossrs/srs:5 sleep 300
+создать папку
+mkdir -p ./srs-config
+скопировать конфиги
+docker cp srs-temp:/usr/local/srs/conf ./srs-config
+удалить временный котайнер
+docker rm -f srs-temp
+в Dockerfile
+COPY srs-config/ /usr/local/srs/conf/
+------------------------------------
+настраиваем OBS
+настройки - трансляция - настраиваемый
+сервер rtmp://localhost/live
+Ключ потока (Stream Key): livestream
+-------------
+ports:
+  - "1935:1935"   # RTMP
+  - "1985:1985"   # HTTP API
+  - "8080:8080"   # Web UI
+-------------
+http://localhost:8080/
+
+---------------

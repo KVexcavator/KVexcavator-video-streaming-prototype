@@ -1,0 +1,49 @@
+version: '3.1'
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo_beanie
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - beach_data:/data/db
+    networks:
+      - beach_net
+
+  mongo-express:
+    image: mongo-express
+    container_name: db_adminka
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    networks:
+      - beach_net
+
+  fastapi:
+    build:
+      context: ./back_beanie
+      dockerfile: Dockerfile
+    container_name: app_beanie
+    restart: always
+    env_file:
+      - ./back_beanie/.env
+    ports:
+      - 8000:8000
+    networks:
+      - beach_net
+    depends_on:
+      - mongo
+
+volumes:
+  beach_data:
+
+networks:
+  beach_net:
+    driver: bridge
