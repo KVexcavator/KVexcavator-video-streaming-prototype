@@ -1,12 +1,19 @@
-import { } from 'react'
+import { Outlet } from 'react-router'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Sidebar from './components/Sidebar'
 
-function App() {
-
+export default function App() {
   return (
-    <>
-      <h1 className='text-3xl font-bold text-indigo-800'>Hello React-Main</h1>
-    </>
-  )  
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 p-4">
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+    </div>
+  )
 }
-
-export default App
