@@ -1,0 +1,15 @@
+anyio
+bcrypt
+beanie
+dnspython
+email_validator
+fastapi
+fastapi_cors
+httpx
+motor
+passlib
+pydantic
+pydantic-settings
+PyJWT
+python-multipart
+uvicorn

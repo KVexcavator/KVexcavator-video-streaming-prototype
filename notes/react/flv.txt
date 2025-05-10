@@ -2,3 +2,10 @@ https://www.npmjs.com/package/flv.js/v/1.6.0
 
 npm install flv.js
 
+vhost __defaultVhost__ {
+    http_flv {
+        enabled on;
+        mount [vhost]/[app]/[stream].flv;
+        dir ./objs/nginx/html;
+    }
+}

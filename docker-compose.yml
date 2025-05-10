@@ -4,7 +4,7 @@ services:
   srs:
     build:
       context: ./
-      dockerfile: dockers/dev/Dockerfile.srs.config
+      dockerfile: dockers/dev/Dockerfile.srs.conf
     container_name: srs-config
     restart: always
     ports:
@@ -15,6 +15,50 @@ services:
     #   - ./srs-config:/usr/local/srs/conf 
     networks:
       - srs-project-net
+
+  mongo:
+    image: mongo:7.0
+    container_name: register-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - srs_project_data:/data/db
+    networks:
+      - srs-project-net
+
+  mongo-express:
+    image: mongo-express
+    container_name: db_adminka
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    networks:
+      - srs-project-net
+
+  register:
+    build:
+      context: ./
+      dockerfile: dockers/dev/Dockerfile.register
+    container_name: register
+    restart: always
+    env_file:
+      - ./back-register/.env
+    ports:
+      - 8000:8000
+    networks:
+      - srs-project-net
+    depends_on:
+      - mongo
+
+volumes:
+  srs_project_data:
 
 networks:
   srs-project-net:
