@@ -1,19 +1,42 @@
-import { Outlet } from 'react-router'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import Sidebar from './components/Sidebar'
+import { } from 'react'
+import {
+  createBrowserRouter,
+  Route,
+  createRoutesFromElements,
+  RouterProvider
+} from 'react-router'
+import RootLayout from './layouts/RootLayout.tsx'
+import Home from './pages/Home'
+import StreamPage from './pages/Stream'
+import Login from './pages/Login'
+import NewStream from './pages/NewStream.tsx'
+import NotFound from './pages/NotFound.tsx'
+import { AuthProvider } from './contexts/AuthContext'
+import AuthRequired  from './components/AuthRequired'
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<RootLayout />}>
+      <Route index element={<Home />} />
+      <Route path='login' element={<Login />} />
+      <Route 
+        path='stream/:id' 
+        element={<StreamPage /> }
+        errorElement={<NotFound />}
+      />
+      <Route element={<AuthRequired />}>
+        <Route path='new-stream' element={<NewStream />} />
+      </Route>  
+      <Route path="*" element={<NotFound />} />
+    </Route>
+  )
+)
 
 export default function App() {
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-4">
-          <Outlet />
-        </main>
-      </div>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>    
   )
 }

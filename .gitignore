@@ -12,6 +12,9 @@
 *.sw?
 .env
 # =====================
+# personal notes and data
+notes/examples/*
+#=======================
 # react
 logs
 *.log
