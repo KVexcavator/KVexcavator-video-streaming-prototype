@@ -1,0 +1,8 @@
+FROM node:20.19.0
+
+WORKDIR /app
+COPY front-main/package.json* ./
+RUN npm install
+COPY front-main/ .
+EXPOSE 5173
+CMD ["npm", "run", "dev"]

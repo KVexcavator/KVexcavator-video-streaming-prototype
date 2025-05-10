@@ -1,0 +1,6 @@
+networks:
+  srs-project-net:
+    driver: bridge
+
+Если, например, есть в docker-compose.yml сервис с именем back-register, то в React: 
+fetch("http://back-register:8000/api/some-endpoint")

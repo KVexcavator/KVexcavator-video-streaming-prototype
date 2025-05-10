@@ -57,6 +57,24 @@ services:
     depends_on:
       - mongo
 
+
+  front-main:
+    build:
+      context: ./
+      dockerfile: dockers/dev/Dockerfile.front.main
+    container_name: front-main
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front-main:/app
+      - /app/node_modules
+    environment:
+      - HOST=0.0.0.0
+    command: npm run dev
+    networks:
+      - srs-project-net
+
+
 volumes:
   srs_project_data:
 

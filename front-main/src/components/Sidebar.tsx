@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 
 export default function Sidebar() {
   return (
-    <aside className="w-60 bg-gray-200 p-4">
+    <aside className="w-60 bg-pink-200 p-4">
       <nav>
         <ul className="space-y-2">
           <li>
