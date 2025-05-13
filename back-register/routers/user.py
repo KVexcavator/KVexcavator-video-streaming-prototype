@@ -44,7 +44,7 @@ async def login(
     User.username == loginUser.username
   )
 
-  if user or auth_handler.verify_password(loginUser.password, user.password):
+  if user and auth_handler.verify_password(loginUser.password, user.password):
     token = auth_handler.encode_token(
       str(user.id), 
       user.username

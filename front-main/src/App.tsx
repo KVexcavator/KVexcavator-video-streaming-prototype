@@ -9,6 +9,7 @@ import RootLayout from './layouts/RootLayout.tsx'
 import Home from './pages/Home'
 import StreamPage from './pages/Stream'
 import Login from './pages/Login'
+import Register from './pages/Register.tsx'
 import NewStream from './pages/NewStream.tsx'
 import NotFound from './pages/NotFound.tsx'
 import { AuthProvider } from './contexts/AuthContext'
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<RootLayout />}>
       <Route index element={<Home />} />
+      <Route path='register' element={<Register />} />
       <Route path='login' element={<Login />} />
       <Route 
         path='stream/:id' 

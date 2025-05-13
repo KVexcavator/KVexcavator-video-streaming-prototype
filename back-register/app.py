@@ -1,9 +1,13 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi_cors import CORS
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
 from config import init_db
 from routers import stream as stream_router
 from routers import user as user_router
+
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -12,8 +16,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-CORS(app) 
-# .env ALLOW_ORIGINS, ALLOWED_CREDENTIALS, ALLOWED_METHODS, ALLOWED_ORIGINS, and others
+origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # список строк
+    allow_credentials=os.getenv("ALLOW_CREDENTIALS", "false").lower() == "true",
+    allow_methods=os.getenv("ALLOWED_METHODS", "GET,POST,OPTIONS").split(","),
+    allow_headers=os.getenv("ALLOWED_HEADERS", "*").split(","),
+)
 
 app.include_router(
   stream_router.router,

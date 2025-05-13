@@ -9,6 +9,6 @@ async def init_db():
     settings.DB_URL
   )
   await init_beanie(
-    database=client.carAds,
+    database=client.DB_NAME,
     document_models=[User, Stream]
   )

@@ -37,6 +37,12 @@ export default function Sidebar() {
                 >
                   Login
                 </NavLink>
+                <NavLink 
+                  to="/register"
+                  className="block p-2 hover:bg-gray-300 rounded"
+                >
+                  Register
+                </NavLink>
               </>
             } 
           </li>

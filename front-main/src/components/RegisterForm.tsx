@@ -6,24 +6,25 @@ import { useState } from "react"
 
 const schema = z.object({
   username: z.string().min(4, "Username must be at least 4 characters long").max(10, "Username cannot exceed 10 characters"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(4, "Password must be at least 4 characters long").max(10, "Password cannot exceed 10 characters"),
 })
 
-type LoginSchema = z.infer<typeof schema>
+type RegisterSchema = z.infer<typeof schema>
 
-const LoginForm = () => {
-  const { login, message } = useAuth()
+const RegisterForm = () => {
+  const { registration , message } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<LoginSchema>({ resolver: zodResolver(schema) })
+  } = useForm<RegisterSchema>({ resolver: zodResolver(schema) })
 
-  const onSubmitForm = async (data: LoginSchema) => {
+  const onSubmitForm = async (data: RegisterSchema) => {
     setLoading(true)
-    await login(data.username, data.password)
+    await registration(data.username, data.password, data.email)
     setLoading(false)
   }
 
@@ -34,6 +35,21 @@ const LoginForm = () => {
           className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
           onSubmit={handleSubmit(onSubmitForm)}
         >
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Email"
+              {...register("email")}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs italic">{errors.email.message}</p>
+            )}
+          </div>
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
               Username
@@ -72,7 +88,7 @@ const LoginForm = () => {
               disabled={loading}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              {loading ? "Signing In..." : "Sign In"}
+              {loading ? "Registering In..." : "Register"}
             </button>
           </div>
 
@@ -85,4 +101,4 @@ const LoginForm = () => {
   )
 }
 
-export default LoginForm
+export default RegisterForm

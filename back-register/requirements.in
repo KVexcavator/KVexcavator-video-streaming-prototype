@@ -13,3 +13,4 @@ pydantic-settings
 PyJWT
 python-multipart
 uvicorn
+python-dotenv

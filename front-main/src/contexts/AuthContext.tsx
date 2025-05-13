@@ -4,6 +4,7 @@ type AuthContextType = {
   user: string | null
   jwt: string | null
   message: string
+  registration: (username: string, password: string, email: string) => Promise<unknown>
   login: (username: string, password: string) => Promise<unknown>
   logout: () => void
   setMessage: (msg: string) => void
@@ -54,6 +55,31 @@ export const AuthProvider = ({ children }: Props) => {
     }
   }, [])
 
+  const registration = async (username: string, password: string, email: string) => {
+    try{
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          email,
+        }),
+      })
+      if (response.ok){
+        const data = await response.json()
+        setMessage(`Registration successful: user ${data.username} created`)
+      } else {
+        const data = await response.json()
+        setMessage(`Registration failed: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      setMessage(`Registration failed: ${JSON.stringify(error)}`)
+    }
+  }
+
   const login = async (username: string, password: string) => {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
       method: 'POST',
@@ -93,6 +119,7 @@ export const AuthProvider = ({ children }: Props) => {
       value={{
         user,
         jwt,
+        registration,
         login,
         logout,
         message,
