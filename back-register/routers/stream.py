@@ -7,7 +7,7 @@ from fastapi import (
   HTTPException,
   status)
 from services import AuthHandler
-from models import User, Stream, UpdateStream
+from models import User, Stream, UpdateStream, StreamOut
 
 auth_handler = AuthHandler()
 router = APIRouter()
@@ -16,9 +16,9 @@ router = APIRouter()
 async def get_streams():
   return await Stream.find_all().to_list()
 
-@router.get("/{stream_id}", response_model=Stream)
+@router.get("/{stream_id}", response_model=StreamOut)
 async def get_stream(stream_id: PydanticObjectId):
-  stream = await Stream.get(stream_id)
+  stream = await Stream.get(stream_id, fetch_links=True)
   if not stream:
     raise HTTPException(status_code=404, detail="Stream not found")
   return stream
@@ -35,11 +35,12 @@ async def add_stream(
   user_data=Depends(auth_handler.auth_wrapper),
 ):
   user = await User.get(user_data["user_id"])
+  # print(f"Fetched User: {user}")
 
   stream = Stream(
     title=title,
     description=description,
-    user=user,
+    streamer=user,
   )
   return await stream.insert(link_rule=WriteRules.WRITE)
 

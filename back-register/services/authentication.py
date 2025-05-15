@@ -23,23 +23,27 @@ class AuthHandler:
     payload = {
       "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30),
       "iat": datetime.datetime.now(datetime.timezone.utc),
-      "sub": {
-        "user_id": user_id,
-        "username": username
-      },
+      "sub": user_id, 
+      "username": username,
     }
     return jwt.encode(payload, self.secret, algorithm="HS256")
   
   def decode_token(self, token):
     try:
       payload = jwt.decode( token, self.secret, algorithms=["HS256"])
-      return payload["sub"]
+      # print(f"[AUTH PAYLOAD]: {payload}")
+      return {
+        "user_id": payload["sub"],
+        "username": payload.get("username")
+      }
     except jwt.ExpiredSignatureError:
+      # print("[AUTH ERROR] Token expired")
       raise HTTPException(
         status_code=401,
         detail="Signature has expired"
       )
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+      # print(f"[AUTH ERROR] Invalid token: {str(e)}")
       raise HTTPException(
         status_code=401,
         detail="Invalid token"
@@ -48,4 +52,5 @@ class AuthHandler:
     self,
     auth: HTTPAuthorizationCredentials = Security(security)
   ):
+    # print(f"[AUTH] Received token: {auth.credentials}")
     return self.decode_token(auth.credentials)

@@ -1,0 +1,77 @@
+KrakenD лёгкий, конфигурируется через YAML/JSON, запускается одним контейнером.
+
+KrakenD — это статически сконфигурированный API Gateway, который:
+
+в моём слуяае надо
+- krakend` контейнер (порт 8080)
+- Прокси на твой backend register:8000  через KrakenD: localhost:8082/api/...
+- Фронт будет бить в http://localhost:8082
+
+docker-compose.yml
+
+```yaml
+  krakend:
+    image: devopsfaith/krakend:2.6
+    container_name: krakend
+    volumes:
+      - ./krakend:/etc/krakend
+    ports:
+      - "8082:8080"
+    command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+    networks:
+      - srs-project-net
+    depends_on:
+      - register
+```
+конфиг krakend/krakend.json
+
+```json
+{
+  "version": 3,
+  "name": "SRS KrakenD Gateway",
+  "port": 8080,
+  "timeout": "3s",
+  "cache_ttl": "300s",
+  "endpoints": [
+    {
+      "endpoint": "/api/login",
+      "method": "POST",
+      "backend": [
+        {
+          "host": ["http://register:8000"],
+          "url_pattern": "/login",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/users/{username}",
+      "method": "GET",
+      "backend": [
+        {
+          "host": ["http://register:8000"],
+          "url_pattern": "/users/{username}",
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}
+```
+Фронт делает запрос на:http://localhost:8082/api/login
+KrakenD пересылает его на: http://register:8000/login
+
+```bash
+docker-compose up -d krakend
+```
+```bash
+curl -X POST http://localhost:8082/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "test", "password": "1234"}'
+```
+
+Дополнительно
+
+CORS  добавим middleware
+KrakenD умеет JWT проверять
+Проксировать WebSocket? — можно, но надо обходной путь

@@ -1,7 +1,9 @@
+import StreamForm from "../components/StreamForm"
+
 const NewStream = () => {
   return (
     <div>
-      <h1>New Stream</h1>
+      <StreamForm />
     </div>
   )
 }

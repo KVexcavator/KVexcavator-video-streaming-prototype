@@ -1,0 +1,157 @@
+Kong docker-compose.yml
+
+```yaml
+  kong-database:
+    image: postgres:13
+    container_name: kong-db
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+    networks:
+      - srs-project-net
+    volumes:
+      - kong_db_data:/var/lib/postgresql/data
+
+  kong-migrations:
+    image: kong:3.6
+    depends_on:
+      - kong-database
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "kong migrations bootstrap && kong migrations up"
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_PASSWORD: kong
+      KONG_PASSWORD: kong
+    networks:
+      - srs-project-net
+
+  kong:
+    image: kong:3.6
+    container_name: kong
+    restart: always
+    depends_on:
+      - kong-database
+      - kong-migrations
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8000:8000" # публичный API endpoint (вместо FastAPI)
+      - "8001:8001" # админ интерфейс
+    networks:
+      - srs-project-net
+```
+2. регистрация серисов FastAPI, MongoExpress и т.п. 
+можно сделать это через:
+HTTP-запросы к `localhost:8001`
+через Kong Admin UI  https://pantsel.github.io/konga/
+
+Пример регистрируем FastAPI backend:
+
+```bash
+curl -i -X POST http://localhost:8001/services \
+  --data name=register-api \
+  --data url=http://register:8000
+
+curl -i -X POST http://localhost:8001/services/register-api/routes \
+  --data 'paths[]=/api'
+```
+
+Теперь все запросы к http://localhost:8000/api/... будут проксироваться в register.
+
+
+Фронт обращается только к http://localhost:8000/api/...
+Kong управляет маршрутизацией, логикой, безопасностью
+Бэкенды можно заменять без изменения фронта
+API структура становится централизованной
+
+=========================================
+Kong можно настроить через YAML/JSON с declarative config, и он поддерживает WebSocket из коробки
+
+docker-compose.yml:
+
+```yaml
+  kong:
+    image: kong:3.6
+    container_name: kong
+    ports:
+      - "8000:8000"      # HTTP gateway
+      - "8443:8443"      # HTTPS
+      - "8001:8001"      # Admin API (если нужно)
+      - "8002:8002"      # Admin GUI (если нужно)
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_LOG_LEVEL: debug
+    volumes:
+      - ./kong/kong.yml:/kong/kong.yml
+    networks:
+      - srs-project-net
+    depends_on:
+      - register
+```
+kong/kong.yml
+
+```yaml
+_format_version: "3.0"
+services:
+  - name: register-api
+    url: http://register:8000
+    routes:
+      - name: login
+        paths:
+          - /api/login
+        methods:
+          - POST
+      - name: ws-stream
+        paths:
+          - /ws
+        protocols:
+          - http
+          - https
+          - ws
+          - wss
+        strip_path: false
+```
+# protocols: [ws, wss] — это для WebSocket
+
+---
+
+наример register отдаёт WebSocket по ws://register:8000/ws.
+тогда на фронте:
+```js
+new WebSocket("ws://localhost:8000/ws") // напрямую
+// или
+new WebSocket("ws://localhost:8000/api/ws") // если route настроен
+```
+Kong просто проксирует это
+
+
+```bash
+docker-compose up -d kong
+```
+
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "test", "password": "1234"}'
+```
+
+Kong не нужен PostgreSQL в DB-less mode — всё в YAML
+Kong можно расширять с помощью плагинов: CORS, JWT, Rate Limit и т.д.
+Поддержка WebSocket не требует особой настройки — он просто проксирует как обычный HTTP.
+

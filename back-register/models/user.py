@@ -32,3 +32,12 @@ class CurrentUser(BaseModel):
   username: str
   email: str
   id: PydanticObjectId
+
+class UserOut(BaseModel):
+  id: PydanticObjectId
+  username: str
+  email: str
+  created: datetime
+
+  class Config:
+        orm_mode = True
