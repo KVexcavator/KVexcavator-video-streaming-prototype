@@ -1,17 +1,19 @@
-import { useParams } from 'react-router'
+import { useLoaderData } from 'react-router'
 import { HLSPlayer } from '../players/HLSPlayer'
 import { FLVPlayer } from '../players/FLVPlayer'
 import { useState } from 'react'
+import { type Stream } from "../types"
 
 export default function StreamPage() {
-  const { id } = useParams()
+  const { stream_key } = useLoaderData() as Stream
   const [player, setPlayer] = useState<'HLS' | 'FLV'>('HLS')
+  const srsUrl = import.meta.env.VITE_SRS_URL
 
   return (
     <div className="p-6">
       <div className="flex items-center gap-4 mb-6">
         <h2 className="text-2xl font-bold">
-          Трансляция #{id}
+          Ключ трансляции: {stream_key}
         </h2>
         <div className="flex gap-2">
           <button
@@ -31,8 +33,14 @@ export default function StreamPage() {
         </div>
       </div>
 
+      {/* 'http://localhost:8080/live/livestream.m3u8' */}
+      {/* 'http://localhost:8080/live/livestream.flv' */}
       <div className="mt-4">
-        {player === 'HLS' ? <HLSPlayer /> : <FLVPlayer />}
+        {player === 'HLS' ? 
+          <HLSPlayer url={`${srsUrl}/${stream_key}.m3u8`}/> 
+          : 
+          <FLVPlayer url={`${srsUrl}/${stream_key}.flv`}/>
+        }
       </div>
     </div>
   )
