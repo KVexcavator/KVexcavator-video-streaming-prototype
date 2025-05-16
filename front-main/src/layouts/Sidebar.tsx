@@ -15,6 +15,12 @@ export default function Sidebar() {
             >
               Главная
             </NavLink>
+            <NavLink 
+              to="/streams" 
+              className="block p-2 hover:bg-gray-300 rounded"
+            >
+              Стримы
+            </NavLink>
             {user ?
               <>
                 <NavLink 

@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
-from beanie import Document, Link, Indexed
+from beanie import Document, Link, PydanticObjectId
 from .user import User, UserOut
 from utils import generate_stream_key
 
@@ -27,6 +27,7 @@ class UpdateStream(BaseModel):
   updated_at: datetime = datetime.now()
 
 class StreamOut(BaseModel):
+    id: PydanticObjectId
     title: str
     description: Optional[str]
     streamer: UserOut

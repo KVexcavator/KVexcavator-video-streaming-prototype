@@ -12,6 +12,7 @@ export default async function fetchStreamData(id: string): Promise<Stream> {
 }
 
 // {
+//   "id": "34j2lj4545454..."
 //   "title": "Test Stream",
 //   "description": "Something cool",
 //   "stream_key": "abc123",

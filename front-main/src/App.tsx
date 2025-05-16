@@ -7,7 +7,7 @@ import {
 } from 'react-router'
 import RootLayout from './layouts/RootLayout.tsx'
 import Home from './pages/Home'
-import { Streams, streamsLoader } from './pages/Streams.tsx'
+import Streams from './pages/Streams.tsx'
 import StreamPage from './pages/Stream'
 import Login from './pages/Login'
 import Register from './pages/Register.tsx'
@@ -16,6 +16,7 @@ import NotFound from './pages/NotFound.tsx'
 import { AuthProvider } from './contexts/AuthContext'
 import AuthRequired  from './components/AuthRequired'
 import fetchStreamData from './utils/fetchStreamData'
+import { streamsLoader } from './utils/streamsLoader.ts'
 
 const router = createBrowserRouter(
   createRoutesFromElements(

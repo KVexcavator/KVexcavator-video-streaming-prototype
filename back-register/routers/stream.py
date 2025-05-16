@@ -12,9 +12,9 @@ from models import User, Stream, UpdateStream, StreamOut
 auth_handler = AuthHandler()
 router = APIRouter()
 
-@router.get("/", response_model=List[Stream])
+@router.get("/", response_model=List[StreamOut])
 async def get_streams():
-  return await Stream.find_all().to_list()
+  return await Stream.find_all(fetch_links=True).to_list()
 
 @router.get("/{stream_id}", response_model=StreamOut)
 async def get_stream(stream_id: PydanticObjectId):

@@ -15,7 +15,7 @@ type StreamSchema = z.infer<typeof schema>
 const StreamForm = () => {
   const navigate = useNavigate()
   const { jwt } = useAuth()
-  console.log("JWT: ", jwt)
+  // console.log("JWT: ", jwt)
   const {
     register,
     handleSubmit,
